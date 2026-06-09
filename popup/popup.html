@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CrunchSlow</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+
+    <header class="header">
+      <svg class="logo-icon" viewBox="0 0 24 24" width="22" height="22">
+        <circle cx="12" cy="12" r="11" fill="none" stroke="#F47521" stroke-width="1.5"/>
+        <path d="M 5 15 A 8 8 0 0 1 19 15" fill="none" stroke="#F47521" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+        <path d="M 5 15 A 8 8 0 0 1 12 7" fill="none" stroke="#F47521" stroke-width="2" stroke-linecap="round"/>
+        <line x1="12" y1="13" x2="7" y2="8.5" stroke="#F47521" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="12" cy="13" r="1.5" fill="#F47521"/>
+      </svg>
+      <span class="title">CrunchSlow</span>
+    </header>
+
+    <section class="speed-section">
+      <div class="speed-display">
+        <span id="speed-value">1.00</span>
+        <span class="speed-unit">×</span>
+      </div>
+
+      <div class="slider-row">
+        <button id="btn-decrease" class="ctrl-btn" title="Slow down (,)">−</button>
+        <input
+          type="range"
+          id="speed-slider"
+          min="75"
+          max="100"
+          step="5"
+          value="100"
+          aria-label="Playback speed"
+        >
+        <button id="btn-increase" class="ctrl-btn" title="Speed up (.)">+</button>
+      </div>
+
+      <div class="presets">
+        <button class="preset-btn" data-speed="0.75">0.75×</button>
+        <button class="preset-btn" data-speed="0.80">0.80×</button>
+        <button class="preset-btn" data-speed="0.85">0.85×</button>
+        <button class="preset-btn" data-speed="0.90">0.90×</button>
+        <button class="preset-btn" data-speed="0.95">0.95×</button>
+        <button class="preset-btn active" data-speed="1.00">1.00×</button>
+      </div>
+    </section>
+
+    <footer class="shortcuts">
+      <div class="shortcut-grid">
+        <span class="shortcut-item"><kbd>,</kbd> Slower</span>
+        <span class="shortcut-item"><kbd>.</kbd> Faster</span>
+        <span class="shortcut-item"><kbd>1</kbd>–<kbd>9</kbd> Rewind Ns</span>
+      </div>
+    </footer>
+
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

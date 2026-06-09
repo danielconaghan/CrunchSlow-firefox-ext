@@ -1,0 +1,34 @@
+{
+  "manifest_version": 2,
+  "name": "CrunchSlow",
+  "version": "1.0.0",
+  "description": "Video speed control for Crunchyroll",
+  "icons": {
+    "48": "icons/icon48.svg",
+    "96": "icons/icon96.svg"
+  },
+  "browser_action": {
+    "default_icon": {
+      "48": "icons/icon48.svg"
+    },
+    "default_popup": "popup/popup.html",
+    "default_title": "CrunchSlow"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.crunchyroll.com/*"],
+      "js": ["content/content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "permissions": [
+    "activeTab",
+    "*://*.crunchyroll.com/*"
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "crunchslow@local",
+      "strict_min_version": "57.0"
+    }
+  }
+}
