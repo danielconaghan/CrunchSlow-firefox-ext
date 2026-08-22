@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "CrunchSlow",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Video speed control for Crunchyroll",
   "icons": {
     "48": "icons/icon48.svg",
@@ -23,6 +23,7 @@
   ],
   "permissions": [
     "activeTab",
+    "storage",
     "*://*.crunchyroll.com/*"
   ],
   "browser_specific_settings": {

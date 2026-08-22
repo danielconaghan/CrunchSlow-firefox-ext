@@ -167,6 +167,12 @@ input[type="range"]::-moz-range-track {
   white-space: nowrap;
 }
 
+/* Off-grid speed: mark the nearest preset without claiming an exact match */
+.preset-btn.nearest {
+  border-color: var(--orange-dim);
+  color: var(--orange);
+}
+
 .preset-btn:hover {
   border-color: var(--orange);
   color: var(--orange);

@@ -1,9 +1,10 @@
-const SPEED_STEP = 0.05;
+const SPEED_STEP = 0.01;
 const MIN_SPEED = 0.75;
 const MAX_SPEED = 1.0;
+const STORAGE_KEY = 'speed';
 
 let currentSpeed = 1.0;
-let videoObserver = null;
+let watchedVideo = null;
 
 function getVideo() {
   return document.querySelector('video');
@@ -13,18 +14,23 @@ function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
-function roundToStep(value) {
-  return Math.round(value / SPEED_STEP) * SPEED_STEP;
+function roundSpeed(value) {
+  return Math.round(value * 100) / 100;
 }
 
-function setSpeed(speed) {
-  speed = roundToStep(clamp(speed, MIN_SPEED, MAX_SPEED));
+// Apply a speed locally without writing it back to storage
+function applySpeed(speed) {
+  speed = roundSpeed(clamp(speed, MIN_SPEED, MAX_SPEED));
   const video = getVideo();
   if (video) {
     video.playbackRate = speed;
   }
   currentSpeed = speed;
-  notifySpeedChange(speed);
+}
+
+function setSpeed(speed) {
+  applySpeed(speed);
+  browser.storage.local.set({ [STORAGE_KEY]: currentSpeed }).catch(() => {});
 }
 
 function rewind(seconds) {
@@ -32,12 +38,6 @@ function rewind(seconds) {
   if (video) {
     video.currentTime = Math.max(0, video.currentTime - seconds);
   }
-}
-
-function notifySpeedChange(speed) {
-  try {
-    browser.runtime.sendMessage({ type: 'speedChanged', speed });
-  } catch (_) {}
 }
 
 function onKeyDown(e) {
@@ -64,22 +64,36 @@ function onKeyDown(e) {
 document.addEventListener('keydown', onKeyDown, true);
 
 browser.runtime.onMessage.addListener((message) => {
-  if (message.type === 'setSpeed') {
-    setSpeed(message.speed);
-  } else if (message.type === 'getSpeed') {
-    return Promise.resolve({ speed: currentSpeed });
-  } else if (message.type === 'rewind') {
+  if (message.type === 'rewind') {
     rewind(message.seconds);
+  }
+});
+
+// Restore the saved speed on load, and follow changes made in the popup or other tabs
+browser.storage.local.get(STORAGE_KEY)
+  .then(stored => {
+    if (typeof stored[STORAGE_KEY] === 'number') {
+      applySpeed(stored[STORAGE_KEY]);
+    }
+  })
+  .catch(() => {});
+
+browser.storage.onChanged.addListener((changes, area) => {
+  if (area !== 'local' || !changes[STORAGE_KEY]) return;
+  const speed = changes[STORAGE_KEY].newValue;
+  if (typeof speed === 'number') {
+    applySpeed(speed);
   }
 });
 
 // Reapply speed if Crunchyroll resets it (e.g. on ad breaks or stream changes)
 function watchVideo() {
   const video = getVideo();
-  if (!video) return;
+  if (!video || video === watchedVideo) return;
+  watchedVideo = video;
 
   video.addEventListener('ratechange', () => {
-    if (Math.abs(video.playbackRate - currentSpeed) > 0.01) {
+    if (Math.abs(video.playbackRate - currentSpeed) > 0.001) {
       video.playbackRate = currentSpeed;
     }
   });
