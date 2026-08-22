@@ -74,3 +74,23 @@ presetBtns.forEach(btn => {
   btn.addEventListener('click', () => saveSpeed(parseFloat(btn.dataset.speed)));
 });
 
+// Rewind runs on the page, so hand it to the content script in the active tab
+function rewind(seconds) {
+  browser.tabs.query({ active: true, currentWindow: true })
+    .then(tabs => tabs[0] && browser.tabs.sendMessage(tabs[0].id, { type: 'rewind', seconds }))
+    .catch(() => {});
+}
+
+// The popup holds keyboard focus while open, so the page never sees these keys —
+// mirror the content script's shortcuts here
+document.addEventListener('keydown', (e) => {
+  if (e.key === ',') {
+    e.preventDefault();
+    saveSpeed(currentSpeed - SPEED_STEP);
+  } else if (e.key === '.') {
+    e.preventDefault();
+    saveSpeed(currentSpeed + SPEED_STEP);
+  } else if (e.key >= '1' && e.key <= '9') {
+    rewind(parseInt(e.key, 10));
+  }
+});
